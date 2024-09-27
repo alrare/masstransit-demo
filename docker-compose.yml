@@ -1,0 +1,29 @@
+version: '3.4'
+
+services:
+  masstransitdemo.api:
+    image: ${DOCKER_REGISTRY-}masstransitdemoapi
+    build:
+      context: .
+      dockerfile: MasstransitDemo.Api/Dockerfile
+    ports:
+        - '7047:443'
+        - '7048:80'     
+    depends_on:
+      - "rabbitmq"
+
+  rabbitmq:
+    container_name: "rabbitmqcontainer"
+    image: rabbitmq:management
+    hostname: "rabbitmq"
+    ports:
+        - '5672:5672'
+        - '15672:15672'
+
+  masstransit.consumer:
+    image: ${DOCKER_REGISTRY-}masstransitconsumer
+    build:
+      context: .
+      dockerfile: MasstransitDemo.Consumer/Dockerfile
+    depends_on:
+      - "rabbitmq"
